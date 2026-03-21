@@ -23,6 +23,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
     <title>{% if is_app_mode %}{{ app_name }}{% else %}{{ i18n.app_title.replace(' GUI', '') }}{% endif %}</title>
     <link href="{{ url_for('static', filename='css/fontawesome.min.css') }}" rel="stylesheet">
     <!-- 优化FontAwesome字体加载：使用font-display: swap以提升性能 -->
@@ -944,6 +945,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            margin-left: auto;
         }
 
         .user-status {
@@ -3200,29 +3202,6 @@
             flex-shrink: 0;
         }
 
-        /* 帮助模态窗口样式 - 全屏显示PDF */
-        #helpModal .modal-content {
-            width: 98% !important;
-            max-width: none !important;
-            height: 95vh !important;
-        }
-
-        #helpPdfContainer {
-            width: 100% !important;
-            min-height: calc(95vh - 60px) !important;
-        }
-
-        #helpPdfPages {
-            width: 100% !important;
-            max-width: none !important;
-        }
-
-        #helpPdfPages canvas {
-            width: 95% !important;
-            max-width: 100% !important;
-            height: auto !important;
-        }
-
         .modal-header h3 {
             margin: 0;
             font-size: 1.2em;
@@ -4048,13 +4027,6 @@
                 <span id="userIdentity" style="margin-left: 10px;"></span>
             </div>
             <div class="action-buttons-group">
-                <a id="registerLink" class="register-link" title="{{ '注册账号' if lang == 'zh' else 'Register' }}">
-                    <i class="fas fa-user-plus"></i>
-                    <span>{{ '注册' if lang == 'zh' else 'Register' }}</span>
-                </a>
-                <button id="downloadBtn" class="theme-toggle-btn" title="{{ i18n.get('download_offline', '下载离线版本' if lang == 'zh' else 'Download Offline Version') }}" onclick="window.open('https://github.com/agi-hub/AGIAgent/releases', '_blank')">
-                    <i class="fab fa-github"></i>
-                </button>
                 <button id="langToggleBtn" class="lang-toggle-btn" title="{{ '切换语言' if lang == 'zh' else 'Switch Language' }}">
                     <span id="langToggleText">{{ 'EN' if lang == 'zh' else '中文' }}</span>
                 </button>
@@ -4063,12 +4035,6 @@
                 </button>
                 <button id="configToggleBtn" class="theme-toggle-btn" title="{{ i18n.get('show_config_options', '显示配置选项' if lang == 'zh' else 'Show Configuration') }}">
                     <i class="fas fa-cog" id="configToggleIcon"></i>
-                </button>
-                <button id="helpBtn" class="theme-toggle-btn" title="{{ '帮助' if lang == 'zh' else 'Help' }}">
-                    <i class="fas fa-question-circle"></i>
-                </button>
-                <button id="contactUsBtn" class="theme-toggle-btn" title="{{ '联系我们' if lang == 'zh' else 'Contact Us' }}">
-                    <i class="fas fa-envelope"></i>
                 </button>
             </div>
         </div>
@@ -4166,11 +4132,6 @@
                             rows="1"
                         ></textarea>
                         <div class="mode-selection">
-                            <a href="javascript:void(0);" 
-                               id="newUserGuideLink"
-                               style="color: var(--link-color); text-decoration: underline; cursor: pointer; margin-right: auto; font-size: 0.85em; white-space: nowrap;">
-                                {% if lang == 'zh' %}新手指导{% else %}New User Guide{% endif %}
-                            </a>
                             <label style="display: flex; align-items: center; gap: 4px; color: var(--text-primary); font-size: 0.9em; white-space: nowrap;">
                                 <span>{{ i18n.get('routine_file', '规则文件' if lang == 'zh' else 'Routine File') }}:</span>
                             </label>
@@ -4262,46 +4223,6 @@
         </div>
     </div>
 
-    <!-- 新手指导弹窗（复用预览模态框样式） -->
-    <div id="newUserGuideModal" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 960px; height: auto; max-height: none;">
-            <div class="modal-header">
-                <h3>
-                    {% if lang == 'zh' %}新手指导{% else %}New User Guide{% endif %}
-                </h3>
-                <div class="modal-header-buttons">
-                    <span class="close" id="newUserGuideClose">&times;</span>
-                </div>
-            </div>
-            <div class="modal-body" style="overflow: visible; max-height: none;">
-                {% if lang == 'zh' %}
-                <img src="{{ url_for('user_guide_image') }}"
-                     alt="User Guide"
-                     style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
-                {% else %}
-                <div style="padding: 10px 4px; font-size: 0.95em; line-height: 1.8; color: var(--text-primary);">
-                    <h4 style="margin: 0 0 14px 0; font-size: 1.05em; color: var(--text-primary);">Quick Start Guide:</h4>
-                    <ol style="margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px;">
-                        <li>To view existing examples, leave the login code blank and click the connect icon 🔌 directly to access some sample cases.</li>
-                        <li>If you want to run tasks on your own, click the <strong>"Register Account"</strong> button 👤Register in the top-right corner to sign up and obtain an API Key.</li>
-                        <li>Return to the homepage. The API Key will be auto-filled, and the connection will be established automatically after a few seconds. You can also click the connect icon 🔌 to connect manually.</li>
-                        <li>Select a skill from the dropdown menu: <strong>Skill: Please select...</strong> (It is recommended to choose the recommended options).</li>
-                        <li>Click <strong>"New Workspace"</strong> 📁 or select a folder from the workspace list on the right by single-clicking it.</li>
-                        <li>Enter your requirements and background information in the prompt box (e.g., <em>"Write a patent for a wind power generation system"</em> — ensure it matches the selected skill), then click the upward arrow button ⬆️ to start the task.</li>
-                        <li>Check the task execution results (various documents and code) in the workspace folder of your working directory.</li>
-                        <li>Click the upload button ⬆️ to upload your own materials (docx, PDF, data files, etc.). If you have files in <code>.doc</code> format, please convert them to <code>.docx</code> using Word first.</li>
-                        <li>If the execution deviates from expectations or fails to meet requirements, simply click <strong>"Stop"</strong> and enter new prompts.</li>
-                        <li>To incrementally modify a specific file, you can drag and drop it from the workspace into the prompt box.</li>
-                        <li>The platform allows you to select different main platforms (e.g., General Tasks, Coding, Professional Writing, Patent Assistant, etc.). Data is not shared between different platforms.</li>
-                        <li>For more usage tips, click the help icon ❓ in the top-right corner, which contains detailed instructions.</li>
-                        <li>Mobile login is supported. Simply enter the URL in your mobile browser to access the platform.</li>
-                    </ol>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
     <!-- File preview modal -->
     <div id="previewModal" class="modal">
         <div class="modal-content">
@@ -4376,28 +4297,6 @@
                             </label>
                             {% endfor %}
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Help Modal -->
-    <div id="helpModal" class="modal">
-        <div class="modal-content" style="width: 98%; height: 95vh; margin: 2.5vh auto; max-width: none;">
-            <div class="modal-header">
-                <h3>{{ '用户手册' if lang == 'zh' else 'User Guide' }}</h3>
-                <div class="modal-header-buttons">
-                    <a id="helpPdfDownloadBtn" href="/api/user-guide?download=true" download="user_guide.pdf" class="modal-button" title="{{ '下载PDF' if lang == 'zh' else 'Download PDF' }}" style="text-decoration: none; color: white;">
-                        <i class="fas fa-download"></i>
-                    </a>
-                    <span class="close" id="helpModalClose">&times;</span>
-                </div>
-            </div>
-            <div class="modal-body" style="padding: 0; height: calc(100% - 60px); overflow-y: auto; overflow-x: hidden;">
-                <div id="helpPdfContainer" style="width: 100%; min-height: calc(95vh - 60px); border: none; overflow: visible; background: var(--bg-primary);">
-                    <div style="text-align: center; padding: 20px; color: var(--text-primary);">
-                        <i class="fas fa-spinner fa-spin"></i> {{ '正在加载PDF...' if lang == 'zh' else 'Loading PDF...' }}
                     </div>
                 </div>
             </div>
@@ -4748,45 +4647,6 @@
                     </button>
                     <button id="customConfigSave" class="action-btn" style="background: #007acc; color: white; padding: 10px 20px;">
                         <i class="fas fa-save"></i> {{ i18n.custom_config_save }}
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Contact Us Modal -->
-    <div id="contactUsModal" class="modal">
-        <div class="modal-content" style="width: 80%; max-width: 600px; height: auto;">
-            <div class="modal-header">
-                <h3><i class="fas fa-envelope"></i> {{ i18n.get('contact_us', '联系我们' if lang == 'zh' else 'Contact Us') }}</h3>
-                <span class="close" id="contactUsClose">&times;</span>
-            </div>
-            <div class="modal-body" style="padding: 20px;">
-                <div style="margin-bottom: 15px; padding: 10px; background: var(--bg-secondary); border-radius: 4px;">
-                    <div style="color: var(--text-primary); font-size: 0.95em; line-height: 1.6;">
-                        {{ '如果您对此软件有什么反馈意见，请在此留言，或发邮件到 bitcursor@2925.com' if lang == 'zh' else 'If you have any feedback about this software, please leave a message here or send an email to bitcursor@2925.com' }}
-                    </div>
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-label); font-weight: 500;">{{ i18n.get('contact_current_dir_label', '当前工作目录' if lang == 'zh' else 'Current Workspace Directory') }}:</label>
-                    <div id="contactCurrentDir" style="padding: 8px; background: var(--bg-secondary); border: 1px solid var(--border-primary); border-radius: 4px; color: var(--text-secondary); font-family: monospace; font-size: 0.9em; word-break: break-all;">-</div>
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-label); font-weight: 500;">{{ i18n.get('contact_contact_info_label', '您的联系方式（邮箱或电话，选填）' if lang == 'zh' else 'Your Contact Information (Email or Phone, Optional)') }}:</label>
-                    <input type="text" id="contactInfo" placeholder="{{ i18n.get('contact_contact_info_placeholder', '请输入您的邮箱或电话（选填）' if lang == 'zh' else 'Please enter your email or phone (optional)') }}" 
-                           style="width: 100%; padding: 10px; background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: 4px; color: var(--text-primary); font-family: inherit;">
-                </div>
-                <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 5px; color: var(--text-label); font-weight: 500;">{{ i18n.get('contact_message_label', '留言内容' if lang == 'zh' else 'Message') }}:</label>
-                    <textarea id="contactMessage" placeholder="{{ i18n.get('contact_message_placeholder', '请输入您的留言...' if lang == 'zh' else 'Please enter your message...') }}" 
-                              style="width: 100%; min-height: 200px; padding: 10px; background: var(--bg-input); border: 1px solid var(--border-primary); border-radius: 4px; color: var(--text-primary); font-family: inherit; resize: vertical;"></textarea>
-                </div>
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                    <button id="contactCancel" class="action-btn" style="background: #6c757d; color: white; padding: 10px 20px;">
-                        <i class="fas fa-times"></i> {{ i18n.cancel }}
-                    </button>
-                    <button id="contactSubmit" class="action-btn" style="background: #007acc; color: white; padding: 10px 20px;">
-                        <i class="fas fa-paper-plane"></i> {{ i18n.get('submit', '提交' if lang == 'zh' else 'Submit') }}
                     </button>
                 </div>
             </div>
@@ -8218,37 +8078,6 @@
             }
         });
 
-        // 注册链接点击事件
-        const registerLink = document.getElementById('registerLink');
-        registerLink.addEventListener('click', function(e) {
-            e.preventDefault(); // 阻止默认的链接跳转
-
-            // 获取当前路径作为来源页面标记
-            const currentPath = window.location.pathname;
-            // 使用后端渲染的 CURRENT_LANG，确保与当前页面展示语言一致
-            const currentLang = (typeof CURRENT_LANG !== 'undefined' && (CURRENT_LANG === 'zh' || CURRENT_LANG === 'en'))
-                ? CURRENT_LANG
-                : 'zh';
-            let registerUrl;
-            if (currentPath === '/') {
-                registerUrl = `/register?lang=${encodeURIComponent(currentLang)}`;
-            } else {
-                registerUrl = `/register?from=${encodeURIComponent(currentPath)}&lang=${encodeURIComponent(currentLang)}`;
-            }
-
-            if (isConnected) {
-                // 如果当前处于连接状态，先断开连接
-                disconnectUser();
-                // 等待断开连接完成后再跳转到注册页面
-                setTimeout(() => {
-                    window.location.href = registerUrl;
-                }, 1000); // 给1秒时间让断开连接操作完成
-            } else {
-                // 如果没有连接，直接跳转到注册页面
-                window.location.href = registerUrl;
-            }
-        });
-
         apiKeyInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -9002,40 +8831,6 @@
             // 清理定时器
             clearTimeout(batchProcessingTimer);
         });
-        
-        // 新手指导弹窗逻辑
-        (function() {
-            const guideLink = document.getElementById('newUserGuideLink');
-            const guideModal = document.getElementById('newUserGuideModal');
-            const guideClose = document.getElementById('newUserGuideClose');
-
-            if (!guideLink || !guideModal || !guideClose) {
-                return;
-            }
-
-            const openGuideModal = () => {
-                guideModal.style.display = 'block';
-                guideModal.setAttribute('aria-hidden', 'false');
-            };
-
-            const closeGuideModal = () => {
-                guideModal.style.display = 'none';
-                guideModal.setAttribute('aria-hidden', 'true');
-            };
-
-            guideLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                openGuideModal();
-            });
-
-            guideClose.addEventListener('click', closeGuideModal);
-
-            window.addEventListener('click', (event) => {
-                if (event.target === guideModal) {
-                    closeGuideModal();
-                }
-            });
-        })();
         
         /**
          * 测试批量消息处理性能
@@ -15895,7 +15690,6 @@
             initThemeToggle();
             initAppSelector();
             initFolderIconHint();
-            initContactUs();
             initWelcomeModal();
             
             // Terminal按钮点击事件
@@ -15947,7 +15741,6 @@
             
             // 初始化配置选项切换功能
             initConfigToggle();
-            initHelpButton();
 
             // 初始化MCP服务器选择功能
             initMCPServerSelection();
@@ -16024,69 +15817,6 @@
             
             // 加载routine文件列表
             loadRoutineFiles();
-        }
-
-        // 注意：loadUserGuidePDF() 和 renderHelpPDFPages() 函数已移除
-        // 帮助按钮现在直接在新窗口中打开PDF，不再使用PDF.js加载和渲染
-
-        /**
-         * 初始化帮助按钮功能
-         */
-        function initHelpButton() {
-            const helpBtn = document.getElementById('helpBtn');
-            const helpModal = document.getElementById('helpModal');
-            const helpModalClose = document.getElementById('helpModalClose');
-            const helpPdfDownloadBtn = document.getElementById('helpPdfDownloadBtn');
-            
-            if (!helpBtn) return;
-            
-            // 设置下载按钮链接（如果需要API key，可以在这里添加）
-            if (helpPdfDownloadBtn) {
-                const apiKeyParam = (currentUser && currentUser !== 'default') ? `&api_key=${encodeURIComponent(currentUser)}` : '';
-                helpPdfDownloadBtn.href = `/api/user-guide?download=true${apiKeyParam}`;
-            }
-            
-            // 打开帮助PDF（在新浏览器窗口中打开，让浏览器决定如何显示）
-            function openHelpPDF() {
-                // 构建PDF URL，包含API key参数（如果需要）
-                const apiKeyParam = (currentUser && currentUser !== 'default') ? `?api_key=${encodeURIComponent(currentUser)}` : '';
-                const pdfUrl = `/api/user-guide${apiKeyParam}`;
-                
-                // 在新窗口中打开PDF，让浏览器自己决定如何显示
-                window.open(pdfUrl, '_blank');
-            }
-            
-            // 点击帮助按钮在新窗口打开PDF
-            helpBtn.addEventListener('click', function() {
-                openHelpPDF();
-            });
-            
-            // 如果模态框相关元素存在，保留关闭功能（虽然不再使用模态框）
-            if (helpModal && helpModalClose) {
-                // 关闭帮助窗口
-                function closeHelpModal() {
-                    helpModal.style.display = 'none';
-                }
-                
-                // 点击关闭按钮
-                helpModalClose.addEventListener('click', function() {
-                    closeHelpModal();
-                });
-                
-                // 点击窗口外部关闭
-                helpModal.addEventListener('click', function(event) {
-                    if (event.target === helpModal) {
-                        closeHelpModal();
-                    }
-                });
-                
-                // ESC键关闭
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape' && helpModal.style.display === 'block') {
-                        closeHelpModal();
-                    }
-                });
-            }
         }
 
         /**
@@ -17329,153 +17059,6 @@
                 });
             }
         }
-
-        /**
-         * 初始化联系我们功能
-         */
-        function initContactUs() {
-            const contactUsBtn = document.getElementById('contactUsBtn');
-            const contactUsModal = document.getElementById('contactUsModal');
-            const contactUsClose = document.getElementById('contactUsClose');
-            const contactCancel = document.getElementById('contactCancel');
-            const contactSubmit = document.getElementById('contactSubmit');
-            const contactMessage = document.getElementById('contactMessage');
-            const contactCurrentDir = document.getElementById('contactCurrentDir');
-            const contactInfo = document.getElementById('contactInfo');
-            
-            if (!contactUsBtn || !contactUsModal) return;
-
-            // 获取I18N对象
-            const I18N = window.I18N || JSON.parse(document.getElementById('i18nData')?.textContent || '{}');
-            // 从HTML元素的lang属性获取语言，或从I18N对象获取，默认为'en'
-            const htmlLang = document.documentElement.lang || '';
-            const lang = htmlLang.startsWith('zh') ? 'zh' : (I18N.lang || 'en');
-
-            // 生成格式化的session_id：日期时间戳+用户名+随机数字（用于后台记录）
-            function getCurrentSessionId() {
-                // 生成日期时间戳 (YYYYMMDDHHmmss格式)
-                const now = new Date();
-                const year = now.getFullYear();
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const day = String(now.getDate()).padStart(2, '0');
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
-                const seconds = String(now.getSeconds()).padStart(2, '0');
-                const timestamp = `${year}${month}${day}${hours}${minutes}${seconds}`;
-                
-                // 获取用户名（优先使用currentUser，如果没有则使用currentUserName，都没有则使用'guest'）
-                let username = 'guest';
-                if (typeof currentUser !== 'undefined' && currentUser && currentUser !== 'default') {
-                    username = currentUser;
-                } else if (typeof currentUserName !== 'undefined' && currentUserName) {
-                    username = currentUserName;
-                }
-                
-                // 生成4位随机数字
-                const randomNum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-                
-                // 组合：日期时间戳+用户名+随机数字
-                return `${timestamp}_${username}_${randomNum}`;
-            }
-
-            // 打开留言框
-            function openContactModal() {
-                // 清空留言内容和联系方式
-                if (contactMessage) {
-                    contactMessage.value = '';
-                }
-                if (contactInfo) {
-                    contactInfo.value = '';
-                }
-                
-                // 显示当前选中的目录
-                if (contactCurrentDir) {
-                    const currentDir = typeof selectedDirectory !== 'undefined' && selectedDirectory ? selectedDirectory : '-';
-                    contactCurrentDir.textContent = currentDir;
-                }
-                
-                contactUsModal.style.display = 'block';
-            }
-
-            // 关闭留言框
-            function closeContactModal() {
-                contactUsModal.style.display = 'none';
-            }
-
-            // 提交留言
-            function submitContactMessage() {
-                const message = contactMessage ? contactMessage.value.trim() : '';
-                if (!message) {
-                    const alertMsg = I18N.contact_message_empty || (lang === 'zh' ? '请输入留言内容' : 'Please enter your message');
-                    alert(alertMsg);
-                    return;
-                }
-
-                const sessionId = getCurrentSessionId();
-                const currentDir = typeof selectedDirectory !== 'undefined' && selectedDirectory ? selectedDirectory : '';
-                const contactInfoValue = contactInfo ? contactInfo.value.trim() : '';
-                
-                // 发送留言到服务器
-                fetch('/api/contact-us', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        session_id: sessionId,
-                        message: message,
-                        current_dir: currentDir,
-                        contact_info: contactInfoValue
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const successMsg = I18N.contact_submit_success || (lang === 'zh' ? '留言已提交，感谢您的反馈！' : 'Message submitted, thank you for your feedback!');
-                        alert(successMsg);
-                        closeContactModal();
-                    } else {
-                        const errorMsg = (I18N.contact_submit_error || (lang === 'zh' ? '提交失败：' : 'Submission failed: ')) + (data.error || (lang === 'zh' ? '未知错误' : 'Unknown error'));
-                        alert(errorMsg);
-                    }
-                })
-                .catch(error => {
-                    const errorMsg = lang === 'zh' ? '网络错误，请稍后重试' : 'Network error, please try again later';
-                    alert(errorMsg);
-                    console.error('Contact us error:', error);
-                });
-            }
-
-            // 绑定事件
-            contactUsBtn.addEventListener('click', openContactModal);
-            
-            if (contactUsClose) {
-                contactUsClose.addEventListener('click', closeContactModal);
-            }
-            
-            if (contactCancel) {
-                contactCancel.addEventListener('click', closeContactModal);
-            }
-            
-            if (contactSubmit) {
-                contactSubmit.addEventListener('click', submitContactMessage);
-            }
-
-            // 点击模态框外部关闭
-            contactUsModal.addEventListener('click', function(e) {
-                if (e.target === contactUsModal) {
-                    closeContactModal();
-                }
-            });
-
-            // ESC键关闭
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && contactUsModal.style.display === 'block') {
-                    closeContactModal();
-                }
-            });
-        }
-
 
         /**
          * 初始化语言切换功能
